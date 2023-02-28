@@ -1,25 +1,4 @@
-// /%***************************80
-// %  Code: 
-// %   mm.cu
-// %
-// % Purpose:
-// %   Parallel code matrix multiply in C 
-// %   with CUDA
-// %
-// %  Modified:
-// %   Jan 16 2022 13:15 
-// %
-// %  Author:
-// %    Murilo Do Carmo Boratto [murilo.boratto 'at' fieb.org.br]
-// %
-// %  How to Compile:
-// %    nvcc mm.c -o object
-// %
-// %  How to Execute: 
-// %    ./mm <size> <blocksize>
-// %    ./mm   16       2
-// %    
-// %*************************80/
+
 
 #include <CL/sycl.hpp>
 #include <array>
