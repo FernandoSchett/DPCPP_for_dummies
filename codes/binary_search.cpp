@@ -1,22 +1,4 @@
-// /%***************************80
-// %  Code: 
-// %   binary_search.cpp
-// %
-// % Purpose:
-// %   Binary Search Parallel code in DPCC++ 
-// %   with CUDA
-// %
-// %  Modified:
-// %   Feb 02 2022 13:15 
-// %
-// %  How to Compile:
-// %    nvcc mm.c -o object
-// %
-// %  How to Execute: 
-// %    ./mm <size> <blocksize>
-// %    ./mm   16       2
-// %    
-// %*************************80/
+
 
 
 #include <CL/sycl.hpp>
