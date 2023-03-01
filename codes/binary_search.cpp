@@ -1,83 +1,66 @@
-
-
-
 #include <CL/sycl.hpp>
 #include <iostream>
 #include <vector>
 
-namespace sycl = cl::sycl;
+using namespace cl::sycl;
 
-class BinarySearchKernel;
+// Define o tamanho do vetor
+constexpr size_t SIZE = 1024;
 
-// Função de busca binária que será executada em paralelo
-template <typename T>
-int parallelBinarySearch(sycl::queue& q, const std::vector<T>& data, const T& value) {
-  size_t n = data.size();
+// Define o valor a ser buscado
+constexpr int TARGET_VALUE = 5;
 
-  // Crie buffers para os dados de entrada e de saída
-  sycl::buffer<T> data_buf(data);
-  sycl::buffer<int> result_buf(1);
+int main() {
+  // Inicializa o vetor com números aleatórios
+  std::vector<int> vec(SIZE);
+  for (int i = 0; i < SIZE; i++) {
+    vec[i] = i;
+  }
 
-  // Inicie o kernel de busca binária
-  q.submit([&](sycl::handler& h) {
-    // Acesso somente leitura aos dados de entrada
-    sycl::accessor<T, 1, sycl::access::mode::read, sycl::access::target::global_buffer>
-        data_accessor(data_buf, h);
+  // Cria uma fila SYCL para executar o código
+  queue q(default_selector{});
 
-    // Acesso somente escrita ao resultado
-    sycl::accessor<int, 1, sycl::access::mode::write, sycl::access::target::global_buffer>
-        result_accessor(result_buf, h);
+  // Cria um buffer SYCL para armazenar o vetor na memória do dispositivo
+  buffer<int, 1> buf(vec.data(), range<1>(SIZE));
 
-    // Crie um objeto kernel e passe os acessores como argumentos
-    h.parallel_for<BinarySearchKernel>(sycl::range<1>(1), [=](sycl::id<1> idx) {
-      int left = 0;
-      int right = n - 1;
-      int result = -1;
+  // Realiza a busca binária paralelizada
+  int found_index = -1;
+  q.submit([&](handler &h) {
+    // Cria um acesso de leitura ao buffer
+    auto acc = buf.get_access<access::mode::read>(h);
 
-      while (left <= right) {
-        int mid = (left + right) / 2;
+    // Cria um acesso de escrita ao índice encontrado
+    buffer<int, 1> found_index_buf(&found_index, range<1>(1));
+    accessor<int, 1, access::mode::write, access::target::global_buffer> found_index_acc(found_index_buf, h);
 
-        if (data_accessor[mid] == value) {
-          result = mid;
-          break;
-        } else if (data_accessor[mid] < value) {
-          left = mid + 1;
+    // Define o tamanho do grupo de trabalho
+    h.parallel_for<class binary_search>(range<1>(SIZE), [=](id<1> idx) {
+      // Realiza a busca binária
+      int start = 0;
+      int end = SIZE - 1;
+      while (start <= end) {
+        int mid = (start + end) / 2;
+        if (acc[mid] == TARGET_VALUE) {
+          // Atualiza o índice encontrado
+          found_index_acc[0] = mid;
+          return;
+        } else if (acc[mid] < TARGET_VALUE) {
+          start = mid + 1;
         } else {
-          right = mid - 1;
+          end = mid - 1;
         }
       }
-
-      result_accessor[0] = result;
     });
   });
 
-  // Espere a finalização do kernel e leia o resultado
-  auto result = result_buf.get_access<sycl::access::mode::read>()[0];
-  return result;
-}
+  // Espera a fila terminar de executar
+  q.wait();
 
-int main() {
-  const int size = 1024;
-  std::vector<int> data(size);
-
-  // Preencha o vetor com valores crescentes
-  for (int i = 0; i < size; ++i) {
-    data[i] = i;
-  }
-
-  // Escolha um valor para buscar
-  int value = 512;
-
-  // Crie uma fila SYCL para execução em GPU ou CPU
-  sycl::queue q(sycl::gpu_selector{});
-
-  // Execute a busca binária em paralelo
-  int result = parallelBinarySearch(q, data, value);
-
-  if (result != -1) {
-    std::cout << "Valor " << value << " encontrado no índice " << result << std::endl;
+  // Verifica se o valor foi encontrado
+  if (found_index != -1) {
+    std::cout << "Valor encontrado no índice " << found_index << std::endl;
   } else {
-    std::cout << "Valor " << value << " não encontrado" << std::endl;
+    std::cout << "Valor não encontrado" << std::endl;
   }
 
   return 0;

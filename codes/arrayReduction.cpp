@@ -1,4 +1,25 @@
-
+// /%***************************
+// %  Code: 
+// %    arrayReduction.cpp
+// %
+// % Purpose:
+// %   Parallel code array reduction in Cpp 
+// %   with DPCPP
+// %
+// %  Modified:
+// %   fev 28 2023 19:20
+// %
+// %  Author:
+// %    Orlando Mota Pires [orlando.pires 'at' fbter.org.br]
+// %
+// %  How to Compile:
+// %    Go to dpcpp-for-dummies directory and run the following: 
+// %      dpcpp -O2 -g -std=c++17 -o arrayReduction codes/arrayReduction.cpp
+// %
+// %  How to Execute: 
+// %    ./arrayReduction 
+// %
+// %*************************
 
 #include <CL/sycl.hpp>
 #include <array>
@@ -10,7 +31,7 @@
 using namespace sycl;
 
 // Array type and data size for this example.
-constexpr size_t array_size = 10000;
+constexpr size_t array_size = 151;
 typedef std::array<int, array_size> IntArray;
 
 // Create an exception handler for asynchronous SYCL exceptions
@@ -28,110 +49,63 @@ static auto exception_handler = [](sycl::exception_list e_list) {
   }
 };
 
-//************************************
-// Vector add in DPC++ on device: returns sum in 4th parameter "sum_parallel".
-//************************************
-void VectorAdd(queue &q, const IntArray &a_array, const IntArray &b_array,
-               IntArray &sum_parallel) {
-  // Create the range object for the arrays managed by the buffer.
-  range<1> num_items{a_array.size()};
+void VectorAdd(queue &q, IntArray &array, int *sum_parallel) {
 
-  // Create buffers that hold the data shared between the host and the devices.
-  // The buffer destructor is responsible to copy the data back to host when it
-  // goes out of scope.
-  buffer a_buf(a_array);
-  buffer b_buf(b_array);
-  buffer sum_buf(sum_parallel.data(), num_items);
-
-  // Submit a command group to the queue by a lambda function that contains the
-  // data access permission and device computation (kernel).
+  range<1> num_items{array.size()};
+  buffer array_buf(array.data(), num_items);
+  
   q.submit([&](handler &h) {
-    // Create an accessor for each buffer with access permission: read, write or
-    // read/write. The accessor is a mean to access the memory in the buffer.
-    accessor a(a_buf, h, read_only);
-    accessor b(b_buf, h, read_only);
-
-    // The sum_accessor is used to store (with write permission) the sum data.
-    accessor sum(sum_buf, h, write_only, noinit);
-
-    // Use parallel_for to run vector addition in parallel on device. This
-    // executes the kernel.
-    //    1st parameter is the number of work items.
-    //    2nd parameter is the kernel, a lambda that specifies what to do per
-    //    work item. The parameter of the lambda is the work item id.
-    // DPC++ supports unnamed lambda kernel by default.
-    h.parallel_for(num_items, [=](auto i) { sum[i] = a[i] + b[i]; });
+    accessor array_a(array_buf, h, read_only);
+    h.parallel_for(num_items, [=](auto i) { *sum_parallel += array_a[i]; });
   });
+
 }
 
-//************************************
-// Initialize the array from 0 to array_size - 1
-//************************************
-void InitializeArray(IntArray &a) {
-  for (size_t i = 0; i < a.size(); i++) a[i] = i;
+void InitializeArray(IntArray &array) {
+  for (size_t i = 0; i < array.size(); i++) array[i] = i;
 }
 
-//************************************
-// Demonstrate vector add both in sequential on CPU and in parallel on device.
-//************************************
 int main() {
-  // Create device selector for the device of your interest.
-#if FPGA_EMULATOR
-  // DPC++ extension: FPGA emulator selector on systems without FPGA card.
-  INTEL::fpga_emulator_selector d_selector;
-#elif FPGA
-  // DPC++ extension: FPGA selector on systems with FPGA card.
-  INTEL::fpga_selector d_selector;
-#else
-  // The default device selector will select the most performant device.
-  default_selector d_selector;
-#endif
 
-  // Create array objects with "array_size" to store the input and output data.
-  IntArray a, b, sum_sequential, sum_parallel;
+  #if FPGA_EMULATOR
+    INTEL::fpga_emulator_selector d_selector;
+  #elif FPGA
+    INTEL::fpga_selector d_selector;
+  #else
+    default_selector d_selector;
+  #endif
 
-  // Initialize input arrays with values from 0 to array_size - 1
-  InitializeArray(a);
-  InitializeArray(b);
+  IntArray array;
+  int sum_sequential = 0, sum_parallel = 0;
+
+
+  InitializeArray(array);
 
   try {
     queue q(d_selector, exception_handler);
 
-    // Print out the device information used for the kernel code.
-    std::cout << "Running on device: "
-              << q.get_device().get_info<info::device::name>() << "\n";
-    std::cout << "Vector size: " << a.size() << "\n";
+    std::cout << "Running on device: " << q.get_device().get_info<info::device::name>() << "\n";
+    std::cout << "Vector size: " << array.size() << "\n";
 
-    // Vector addition in DPC++
-    VectorAdd(q, a, b, sum_parallel);
+    VectorAdd(q, array, &sum_parallel);
   } catch (exception const &e) {
     std::cout << "An exception is caught for vector add.\n";
     std::terminate();
   }
 
-  // Compute the sum of two arrays in sequential for validation.
-  for (size_t i = 0; i < sum_sequential.size(); i++)
-    sum_sequential[i] = a[i] + b[i];
+  for (size_t i = 0; i < array.size(); i++)
+    sum_sequential += array[i];
 
-  // Verify that the two arrays are equal.
-  for (size_t i = 0; i < sum_sequential.size(); i++) {
-    if (sum_parallel[i] != sum_sequential[i]) {
-      std::cout << "Vector add failed on device.\n";
-      return -1;
-    }
+  if(sum_sequential == sum_parallel){
+    std::cout << "Array reduction worked successfully\n";
+    std::cout << "\nSum_parallel: " << sum_parallel << std::endl;
+    std::cout << "Sum_sequential: " << sum_sequential << std::endl;
+  }else{
+    std::cout << "The parallel and sequential sums dont match. :(\n\n";
+    std::cout << "Sum_sequential: " << sum_sequential << std::endl;
+    std::cout << "Sum_parallel: " << sum_parallel << std::endl;
+   
   }
 
-  int indices[]{0, 1, 2, (a.size() - 1)};
-  constexpr size_t indices_size = sizeof(indices) / sizeof(int);
-
-  // Print out the result of vector add.
-  for (int i = 0; i < indices_size; i++) {
-    int j = indices[i];
-    if (i == indices_size - 1) std::cout << "...\n";
-    std::cout << "[" << j << "]: " << a[j] << " + " << b[j] << " = "
-              << sum_parallel[j] << "\n";
-  }
-
-  std::cout << "Vector add successfully completed on device.\n";
   return 0;
 }
