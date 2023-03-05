@@ -17,7 +17,7 @@ int main(){
         // creating accessor
         sycl::accessor accPrimes{buffPrimes,h};
         h.parallel_for(sycl::range{n},[=] (sycl::id<1> idx){
-            // filling vectors
+            // excluding all multiple values of i
             int i = idx[0];
             if(i >= 2){
                 int size = n * n;
@@ -28,7 +28,7 @@ int main(){
         });
     }).wait();
     
-    // usage a oneMKL library function, dot product
+    // view prime numbers
     for(int i = 2; i <= n * n; i ++)
         if(primes[i])
             cout << i << " ";
