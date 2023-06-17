@@ -1,37 +1,87 @@
-# DPCPP-for-Dummies
+### This READ.md template was written based on this [repository](https://github.com/FernandoSchett/github_readme_template).
 
-Este repositório contém amostras de código em DPC++, uma extensão do padrão C++ criada pela Intel para programação paralela heterogênea. As amostras de código foram criadas com o objetivo de ajudar desenvolvedores a entenderem e utilizarem a linguagem DPC++ em seus projetos.
+<h1 align="center">🖥️ DPCPP for dummies 🖥️</h1>
 
-## O que é DPC++?
-DPC++ é uma extensão do padrão C++ que permite a programação paralela heterogênea em sistemas com múltiplos tipos de processadores, como CPUs e GPUs. Ele foi criado pela Intel em conjunto com outras empresas e é baseado em tecnologias de código aberto, como o LLVM e o SYCL.
+<div align="center">
+	<a href="link_for_webite">
+	<img height = "250em" src = "" />
+    </a>
+</div>
 
-## Como executar códigos em DPC++
+## Developed by 💻:
 
-Para utilizar as amostras de código, é necessário ter um compilador que suporte DPC++, como o Intel DPC++ Compiler ou o hipSYCL. Também é necessário ter um sistema com suporte a processadores heterogêneos, como uma CPU Intel e uma GPU AMD Radeon.</br>
-Para compilar executar os exemplos presentes neste repositório, dentro do diretório <i>codes</i>, execute os comandos a seguir, tendo em vista que "nome-da-saida" se refere ao nome que o arquivo executável terá após a compilação e  "codigo-fonte" referese ao nome do arquivo código que você deseja compilar: 
+- [Fernando Schettini](https://github.com/FernandoSchett).
+- [Orlando Mota](https://github.com/orlandomotapires).
+- [Antonio Horácio](https://github.com/AntonioHoracio77).
 
-1. Carregue o ambiente oneAPI com o seguinte comando:
+## Special thanks to 🥰:
 
-    ```
-    source /opt/intel/oneapi/setvars.sh
-    ```
+- [Murillo Boratto](https://github.com/muriloboratto), our mentor, your experience and knowledge have been invaluable to our progress.
 
-2. Para compilar, use  seguinte comando:
+## About 🤔:
 
-    ```
-    dpcpp -o nome-da-saida codigo-fonte 
-    ```
+This repository contains code samples in DPC++, an extension of the C++ standard created by Intel for heterogeneous parallel programming. The code samples were created with the aim of helping developers understand and use the DPC++ language in their projects.
 
-3. Executando:
+### What is DPC++?
+DPC++ is an extension of the C++ standard that enables heterogeneous parallel programming on systems with multiple types of processors, such as CPUs and GPUs. It was created by Intel in collaboration with other companies and is based on open-source technologies like LLVM and SYCL.
 
-    ```
-    ./nome-da-saida
-    ```
+## Resourses 🧑‍🔬:
 
-4. Exemplo: Para compilar o arrayReduction precisamos rodar os seguintes comandos:
-    
-    ```
-    source /opt/intel/oneapi/setvars.sh
-    dpcpp -o arrayReduction ./arrayReduction.cpp
-    ./arrayReduction 
-    ```
+- 
+- 
+
+
+## Results 📈:
+
+## Dependencies 🚚:
+
+The project dependencies are described in a dependencies file within the repository. In summary, heres what you're gonna need in order to run the project:
+
+- 
+- 
+
+For installing dependencies more quickly, you can run the following command at terminal, inside the clonned repository:
+
+    pip3 install -r ./dependencies/requirements.txt
+
+Make sure you have all Dependencies before running the project.
+
+## How to run it 🏃:
+
+To use the code samples, you need to have a compiler that supports DPC++, such as the Intel DPC++ Compiler or hipSYCL. You also need a system with support for heterogeneous processors, such as an Intel CPU and an AMD Radeon GPU.</br>
+To compile and run the examples in this repository, inside the "codes" directory, execute the following commands, where "output-name" refers to the name the executable file will have after compilation, and "source-code" refers to the name of the code file you want to compile:
+
+1. Load the oneAPI environment with the following command:
+
+	source /opt/intel/oneapi/setvars.sh
+
+2. To compile, use the following command:
+	
+	dpcpp -o output-name source-code
+
+3. Running the code:
+	
+	./output-name
+
+4. **[ Example ]** To compile the arrayReduction, we need to run the following commands:
+
+	source /opt/intel/oneapi/setvars.sh
+	dpcpp -o arrayReduction ./arrayReduction.cpp
+	./arrayReduction
+
+
+## Development Process ⚙️:
+
+Developers used [Trello]() to get things organized, each one using their own branch to code, using names to identify the commit type then merginng the features into develop branch. After testing, the group update the main branch. This application was developed in xx/xx/20xx until xx/xx/20xx.
+
+### Tools Used 🛠️: 
+
+- [VScode](https://code.visualstudio.com/).  
+
+## How to contribute 🫂:
+
+Feel free to create a new branch, fork the project, create a new Issue or make a pull request contact one of us to develop at DPCPP for dummies.
+
+## Licence 📜:
+
+[Apache V2](https://choosealicense.com/licenses/apache-2.0/)
