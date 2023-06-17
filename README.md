@@ -35,16 +35,7 @@ DPC++ is an extension of the C++ standard that enables heterogeneous parallel pr
 
 ## Dependencies 🚚:
 
-To use the code samples, you need to have a compiler that supports DPC++, such as the Intel® DPC++ Compiler or hipSYCL. You also need a system with support for heterogeneous processors, such as an Intel® CPU and an AMD Radeon GPU. The project dependencies are described in a dependencies file within the repository. In summary, heres what you're gonna need in order to run the project:
-
-- 
-- 
-
-For installing dependencies more quickly, you can run the following command at terminal, inside the clonned repository:
-
-    pip3 install -r ./dependencies/requirements.txt
-
-Make sure you have all Dependencies before running the project.
+To use the code samples, you need to have a compiler that supports DPC++, such as the Intel® DPC++ Compiler or hipSYCL. You also need a system with support for heterogeneous processors, such as an Intel® CPU and an AMD Radeon GPU. The project dependencies are described in a dependencies file within the repository. Dont forget to download DPCPP and Sycl libraries within the [Intel® oneAPI DPC++/C++ Compiler](https://www.intel.com/content/www/us/en/developer/articles/tool/intel-system-studio-download-and-install-intel-c-compiler.html) to run the codes inside this repository.
 
 ## How to run it 🏃:
 
@@ -70,12 +61,13 @@ To compile and run the examples in this repository, inside the _codes_ directory
 
 ## Development Process ⚙️:
 
-Developers used [Trello]() to get things organized, each one using their own branch to code, using names to identify the commit type then merginng the features into develop branch. After testing, the group update the main branch. This application was developed in xx/xx/20xx until xx/xx/20xx.
+Developers worked for two weeks using the Kanban methodology to develop this project. Each week, they synchronized and delivered their tasks.
 
 ### Tools Used 🛠️: 
 
 - [VScode](https://code.visualstudio.com/). 
 - [GCC](https://gcc.gnu.org/). 
+- [Intel® oneAPI DPC++/C++ Compiler](https://www.intel.com/content/www/us/en/developer/articles/tool/intel-system-studio-download-and-install-intel-c-compiler.html)
 
 ## How to contribute 🫂:
 
@@ -87,3 +79,4 @@ Feel free to create a new branch, fork the project, create a new Issue or make a
 
 ## References 📙:
 	
+[1] INTEL. Guia do Desenvolvedor e Referência do Compilador Intel® oneAPI DPC++/C++. [S.l.], 2023. Available at: https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2023-0/overview.html. Accessed on: June 16, 2023.
